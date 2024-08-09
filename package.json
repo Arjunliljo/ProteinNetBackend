@@ -1,0 +1,11 @@
+{
+  "name": "proteinnet",
+  "version": "1.0.0",
+  "description": "This is protenin net backend project . A simple ecommerce website containts minimum products and catagories",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "arjunCv",
+  "license": "ISC"
+}
