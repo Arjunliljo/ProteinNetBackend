@@ -36,7 +36,7 @@ function serverLess() {
       await mongoose.connect(Db);
       isConnected = true;
     }
-    console.log("connected");
+    console.log("connected vercel");
   }
 
   return async function handler(req, res) {
