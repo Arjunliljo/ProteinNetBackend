@@ -59,4 +59,16 @@ const updateOne = (Model) => {
   });
 };
 
-export { getAll, getOne, createOne, updateOne };
+const deleteOne = (Model) => {
+  return catchAsync(async (req, res, next) => {
+    const { id } = req.params;
+    await Model.findByIdAndDelete(id);
+
+    res.status(204).json({
+      status: "Success",
+      message: "Deleted Successfully",
+    });
+  });
+};
+
+export { getAll, getOne, createOne, updateOne, deleteOne };

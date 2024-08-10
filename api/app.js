@@ -17,6 +17,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/v1/products", productsRoute);
+app.use("/api/v1/users", productsRoute);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`Cannot find the ${req.originalUrl} on the page !`, 404));
