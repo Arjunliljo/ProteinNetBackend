@@ -1,8 +1,8 @@
-import dotenv from "dotenv";
-dotenv.config();
+import { configDotenv } from "dotenv";
+configDotenv();
 
-import mongoose from "mongoose";
 import app from "./app.js";
+import mongoose from "mongoose";
 
 const port = process.env.PORT || 3000;
 const Db = process.env.MONGO_CONNECTION_STR;

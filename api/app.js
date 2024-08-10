@@ -5,6 +5,7 @@ import AppError from "./Utilities/appError.js";
 import globalErrorHandler from "./Utilities/globalErrorhandler.js";
 import userRoute from "./Routes/usersRoute.js";
 import cookieParser from "cookie-parser";
+import { otpToPhone } from "./Utilities/otpGenerate.js";
 
 const app = express();
 

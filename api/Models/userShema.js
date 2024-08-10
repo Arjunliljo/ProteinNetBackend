@@ -19,6 +19,18 @@ const userSchema = mongoose.Schema(
       minlength: [3, "email should be greater than 3 characters"],
       validate: [validator.isEmail, "Please provide a valid email"],
     },
+    phone: {
+      type: String,
+      unique: true,
+      required: [true, "User must have a Phone Number"],
+      validate: {
+        validator: function (value) {
+          return value.length >= 10 && value.length <= 13;
+        },
+        message:
+          "Enter a valid phone number with a length between 9 and 13 digits",
+      },
+    },
     password: {
       type: String,
       required: [true, "User must have a password"],
