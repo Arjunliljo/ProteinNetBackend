@@ -9,7 +9,8 @@ const app = express();
 
 ///Application Level MiddleWares
 app.use(cors());
-app.use(express.json());
+
+if (process.env.NODE_ENV !== "production") app.use(express.json());
 
 //custom middleware
 app.use((req, res, next) => {

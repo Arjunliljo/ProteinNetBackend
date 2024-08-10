@@ -40,15 +40,41 @@ function serverLess() {
   }
 
   return async function handler(req, res) {
+    // CORS setup
+    res.setHeader("Access-Control-Allow-Credentials", true);
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET,OPTIONS,PATCH,DELETE,POST,PUT"
+    );
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
+    );
+
+    if (req.method === "OPTIONS") {
+      res.status(200).end();
+      return;
+    }
+
     try {
       await connectToDb();
-      console.log("Server running on port 3000");
-      res
-        .status(200)
-        .json({ status: "Success", message: "Server started successfully" });
+      // Handle request using Express
+      await new Promise((resolve, reject) => {
+        app(req, res, (err) => {
+          if (err) {
+            console.error("App error:", err);
+            reject(err);
+          } else {
+            resolve();
+          }
+        });
+      });
     } catch (err) {
-      console.log("Connection Error");
-      res.status(500).json({ status: "Failed", message: "Server failed" });
+      console.error("Serverless function error:", err);
+      res
+        .status(500)
+        .json({ status: "Failed", message: err.message || "Server failed" });
     }
   };
 }

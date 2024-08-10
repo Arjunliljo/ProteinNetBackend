@@ -4,7 +4,7 @@ import User from "../Models/userShema.js";
 import catchAsync from "../Utilities/catchAsync.js";
 
 const KEY = process.env.JWT_SECRET;
-
+console.log(KEY);
 const generateToken = (id) => {
   return jwt.sign({ id }, KEY);
 };
