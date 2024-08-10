@@ -2,18 +2,13 @@ import Product from "../Models/productSchema.js";
 import catchAsync from "../Utilities/catchAsync.js";
 
 const getAllProducts = catchAsync(async (req, res, next) => {
-  try {
-    const products = await Product.find();
-
-    res.status(200).json({
-      status: "Success",
-      data: {
-        products,
-      },
-    });
-  } catch (err) {
-    res.status(500).json({ status: "failed", message: "mongoose error" });
-  }
+  const products = await Product.find();
+  res.status(200).json({
+    status: "Success",
+    data: {
+      products,
+    },
+  });
 });
 
 const getProduct = catchAsync(async (req, res, next) => {
