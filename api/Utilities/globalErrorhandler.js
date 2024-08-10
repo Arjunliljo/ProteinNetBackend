@@ -32,7 +32,7 @@ export default function globalErrorHandler(err, req, res, next) {
   err.status = err.status || "error";
   err.isOperational = err.isOperational || false;
 
-  console.log(err.name);
+  console.log(err.name, err.code);
 
   //   catchingDuplicateId
   if (err.name === "CastError") err = handleInvalidId(err);

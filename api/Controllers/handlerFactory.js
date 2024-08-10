@@ -1,4 +1,5 @@
 import catchAsync from "../Utilities/catchAsync.js";
+import AppError from "../Utilities/appError.js";
 
 const getAll = (Model) => {
   return catchAsync(async (req, res, next) => {
@@ -62,7 +63,9 @@ const updateOne = (Model) => {
 const deleteOne = (Model) => {
   return catchAsync(async (req, res, next) => {
     const { id } = req.params;
-    await Model.findByIdAndDelete(id);
+    const doc = await Model.findByIdAndDelete(id);
+
+    if (!doc) return next(new AppError("No document founded on this Id", 400));
 
     res.status(204).json({
       status: "Success",

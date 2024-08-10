@@ -22,8 +22,8 @@ const userSchema = mongoose.Schema({
     minlength: [8, "Password must have atleast 8 characters"],
   },
   confirmPassword: {
-    required: [true, "User must have a confirm password"],
     type: String,
+    required: [true, "User must have a confirm password"],
     validate: {
       validator: function (val) {
         return this.password === val;
@@ -33,11 +33,8 @@ const userSchema = mongoose.Schema({
   },
   role: {
     type: String,
-    enum: {
-      values: ["customer", "admin"],
-      message: "Role must be a customer admin",
-    },
-    default: "user",
+    enum: ["customer", "admin"],
+    default: "customer",
   },
 
   changePasswordDate: {

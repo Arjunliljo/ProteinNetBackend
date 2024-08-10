@@ -3,6 +3,7 @@ import cors from "cors";
 import productsRoute from "./Routes/productsRoute.js";
 import AppError from "./Utilities/appError.js";
 import globalErrorHandler from "./Utilities/globalErrorhandler.js";
+import userRoute from "./Routes/usersRoute.js";
 
 const app = express();
 
@@ -17,7 +18,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/v1/products", productsRoute);
-app.use("/api/v1/users", productsRoute);
+app.use("/api/v1/users", userRoute);
 
 app.all("*", (req, res, next) => {
   next(new AppError(`Cannot find the ${req.originalUrl} on the page !`, 404));

@@ -34,11 +34,11 @@ const productsShema = mongoose.Schema(
       type: Number,
       default: 10,
     },
-    catagory: {
+    category: {
       type: String,
-      required: [true, "Product must have a catagory"],
+      required: [true, "Product must have a category"],
     },
-    Image: String,
+    image: String,
   },
   { timestamps: true }
 );
