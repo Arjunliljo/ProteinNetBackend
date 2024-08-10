@@ -8,6 +8,9 @@ router
   .get(productController.getAllProducts)
   .post(productController.createProduct);
 
-router.route("/:id").patch(productController.updateProduct);
+router
+  .route("/:id")
+  .get(productController.getProduct)
+  .patch(productController.updateProduct);
 
 export default router;
