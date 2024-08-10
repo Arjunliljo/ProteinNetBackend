@@ -5,8 +5,11 @@ import userController from "../Controllers/userController.js";
 const router = express.Router();
 
 router.post("/sign-up", authController.signUp);
+router.post("/login", authController.login);
+router.post("/logout", authController.logout);
+router.delete("/deleteAllUsers", userController.deleteAllUsers);
 
-router.route("/").get(userController.getAllUsers);
+router.route("/").get(authController.protect, userController.getAllUsers);
 
 router
   .route("/:id")

@@ -4,17 +4,18 @@ import productsRoute from "./Routes/productsRoute.js";
 import AppError from "./Utilities/appError.js";
 import globalErrorHandler from "./Utilities/globalErrorhandler.js";
 import userRoute from "./Routes/usersRoute.js";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
 ///Application Level MiddleWares
 app.use(cors());
+app.use(cookieParser());
 
 if (process.env.NODE_ENV !== "production") app.use(express.json());
 
 //custom middleware
 app.use((req, res, next) => {
-  // console.log(req.params.id);
   next();
 });
 

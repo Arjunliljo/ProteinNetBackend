@@ -12,4 +12,9 @@ const getAllUsers = getAll(User);
 const getUser = getOne(User);
 const deleteUser = deleteOne(User);
 
-export default { getAllUsers, getUser, deleteUser };
+const deleteAllUsers = async (req, res, next) => {
+  await User.deleteMany({});
+  res.status(200).json({ status: "Success", message: "Deleted All Users" });
+};
+
+export default { getAllUsers, getUser, deleteUser, deleteAllUsers };

@@ -3,7 +3,7 @@ import AppError from "../Utilities/appError.js";
 
 const getAll = (Model) => {
   return catchAsync(async (req, res, next) => {
-    const datas = await Model.find();
+    const datas = await Model.find().select("-password -role");
     res.status(200).json({
       status: "Success",
       envelop: {
@@ -16,7 +16,7 @@ const getAll = (Model) => {
 const getOne = (Model) => {
   return catchAsync(async (req, res, next) => {
     const { id } = req.params;
-    const data = await Model.findById(id);
+    const data = await Model.findById(id).select("-password -role");
     res.status(200).json({
       status: "Success",
       message: "fetched successfully",
@@ -48,7 +48,7 @@ const updateOne = (Model) => {
     const updatedData = await Model.findByIdAndUpdate(id, updation, {
       new: true,
       runValidators: true,
-    });
+    }).select("-password");
 
     res.status(200).json({
       status: "Success",

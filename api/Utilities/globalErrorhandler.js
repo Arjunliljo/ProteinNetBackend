@@ -27,14 +27,16 @@ const handleValidationDB = (err) => {
   return new AppError(message, 400);
 };
 
+const handleJsonInvalidToken = (err) => {
+  return new AppError("Invalid Token Please login again", 401);
+};
+
 export default function globalErrorHandler(err, req, res, next) {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
   err.isOperational = err.isOperational || false;
 
-  console.log(err.name, err.code);
-
-  //   catchingDuplicateId
+  //   catching invalid id
   if (err.name === "CastError") err = handleInvalidId(err);
 
   //Catching duplicate Fields
@@ -43,5 +45,9 @@ export default function globalErrorHandler(err, req, res, next) {
   //handle validationError
   if (err.name === "ValidationError") err = handleValidationDB(err);
 
+  //invalid token
+  if (err.name === "JsonWebTokenError") err = handleJsonInvalidToken(err);
+
+  
   sendErr(err, res);
 }
