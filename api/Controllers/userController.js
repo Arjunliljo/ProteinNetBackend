@@ -1,10 +1,13 @@
 import User from "../Models/userShema.js";
+import Cart from "../Models/cartModel.js";
 import AppError from "../Utilities/appError.js";
 import catchAsync from "../Utilities/catchAsync.js";
 import { deleteOne, getAll, getOne } from "./handlerFactory.js";
 
 const getMe = catchAsync(async (req, res, next) => {
-  const me = await User.findById(req.userId);
+  //req.user coming from protect middleware
+  const me = req.user;
+
   res.status(200).json({
     status: "Success",
     message: "Successfully fetched the user",
@@ -20,7 +23,10 @@ const updateMe = catchAsync(async (req, res, next) => {
       new AppError("This is not the route for updating password..", 400)
     );
 
-  const updatedMe = await User.findByIdAndUpdate(req.userId, req.body, {
+  //coming from protect middleware
+  const userId = req.user._id;
+
+  const updatedMe = await User.findByIdAndUpdate(userId, req.body, {
     new: true,
     runValidators: true,
   });
@@ -35,22 +41,21 @@ const updateMe = catchAsync(async (req, res, next) => {
 });
 
 const resetPassword = catchAsync(async (req, res, next) => {
+  // body filters will run there is a filterData middle ware running before this to filter the body
   const { password, newPassword, confirmNewPassword } = req.body;
-  console.log(password, newPassword, confirmNewPassword);
+
   // 1). Check whole nesseccery informations are provided
   if (!newPassword || !password || !confirmNewPassword)
-    return next(new AppError(`User must provide valid details..`));
+    return next(new AppError(`User must provide valid details..`, 400));
 
   // 2). Check the given current password matching the old password
 
-  // userId is coming from protect middleware
-  const user = await User.findById(req.userId);
+  // req.user is coming from protect middleware
+  const user = req.user;
 
   const isPassword = await user.checkPassword(password, user.password);
   if (!isPassword)
-    return next(
-      new AppError("Invalid password please provide your current password..")
-    );
+    return next(new AppError("Your current password is invalid", 400));
 
   // 3). check the newPassword and confrimNewPassword are equal or not
 
@@ -71,6 +76,25 @@ const resetPassword = catchAsync(async (req, res, next) => {
   });
 });
 
+const forgotPassword = catchAsync(async (req, res, next) => {
+  const { email } = req.body;
+
+  if (!email) return next(new AppError("Please provide the email.."));
+
+  const user = await User.findOne({ email });
+
+  if (!user) return next(new AppError("No user founded on provided email.."));
+
+  await user.createPasswordResetOtp(email);
+
+  await user.save({ validateBeforeSave: false });
+
+  res.status(200).json({
+    status: "Success",
+    message: "otp Sended to valid for only 10 minutes " + email,
+  });
+});
+
 const deleteMe = catchAsync(async (req, res, next) => {});
 
 const getAllUsers = getAll(User);
@@ -79,6 +103,7 @@ const deleteUser = deleteOne(User);
 
 const deleteAllUsers = async (req, res, next) => {
   await User.deleteMany({});
+  await Cart.deleteMany({});
   res.status(200).json({ status: "Success", message: "Deleted All Users" });
 };
 
@@ -91,4 +116,5 @@ export default {
   deleteMe,
   updateMe,
   resetPassword,
+  forgotPassword,
 };

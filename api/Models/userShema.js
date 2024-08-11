@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import validator from "validator";
 import bcrypt from "bcrypt";
 import AppError from "../Utilities/appError.js";
+import { otpToEmail } from "../Utilities/otpGenerate.js";
 
 const userSchema = mongoose.Schema(
   {
@@ -50,20 +51,25 @@ const userSchema = mongoose.Schema(
         message: "Password did not matching",
       },
     },
+    cartId: {
+      type: mongoose.Schema.ObjectId,
+      ref: "Cart",
+    },
     role: {
       type: String,
       enum: ["customer", "admin"],
       default: "customer",
     },
 
-    changePasswordDate: {
-      type: Date,
-    },
     active: {
       type: Boolean,
       select: false,
       default: true,
     },
+
+    changePasswordDate: Date,
+    passwordResetOtp: String,
+    otpExpires: Date,
   },
   { timestamps: true }
 );
@@ -83,6 +89,8 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, saltRounds);
   this.confirmPassword = undefined;
 
+  this.changePasswordDate = Date.now();
+
   next();
 });
 
@@ -92,6 +100,27 @@ userSchema.methods.checkPassword = async function (
   hashedPassword
 ) {
   return await bcrypt.compare(loginPassword, hashedPassword);
+};
+
+//Protect middle ware using this
+userSchema.methods.changedPasswordAfter = function (jwtTimeStamb) {
+  if (this.changePasswordDate) {
+    const changedTimeStamb = parseInt(this.changePasswordDate.getTime()) / 1000;
+    return jwtTimeStamb < changedTimeStamb;
+  }
+
+  return false;
+};
+
+// password Reset
+userSchema.methods.createPasswordResetOtp = async function (email) {
+  const [response, status, otp] = await otpToEmail(email);
+
+  if (status !== "OK" || !otp)
+    return next(new AppError("Failed to generate otp please try again..", 500));
+
+  this.passwordResetOtp = otp;
+  this.otpExpires = Date.now() + 10 * 60 * 1000;
 };
 
 // deselecting fields that don't want to give to frontend
