@@ -1,4 +1,5 @@
 import User from "../Models/userShema.js";
+import AppError from "../Utilities/appError.js";
 import catchAsync from "../Utilities/catchAsync.js";
 import { deleteOne, getAll, getOne } from "./handlerFactory.js";
 
@@ -13,7 +14,26 @@ const getMe = catchAsync(async (req, res, next) => {
   });
 });
 
-const updateMe = catchAsync(async (req, res, next) => {});
+const updateMe = catchAsync(async (req, res, next) => {
+  if (req.body.password || req.body.confirmPassword)
+    return next(new AppError("This is not the route for updating passoword.."));
+
+  const updatedMe = await User.findByIdAndUpdate(req.userId, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json({
+    status: "Success",
+    message: `${updatedMe.name}'s data updated successfully`,
+    envelop: {
+      user: updatedMe,
+    },
+  });
+});
+
+const resetPassword = catchAsync(async (req, res, next) => {});
+
 const deleteMe = catchAsync(async (req, res, next) => {});
 
 const getAllUsers = getAll(User);
@@ -33,4 +53,5 @@ export default {
   getMe,
   deleteMe,
   updateMe,
+  resetPassword,
 };

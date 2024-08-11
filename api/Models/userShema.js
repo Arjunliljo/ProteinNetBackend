@@ -66,6 +66,7 @@ const userSchema = mongoose.Schema(
 
 //Encrypting password and checking password and confirm password are correct
 userSchema.pre("save", async function (next) {
+  console.log("running");
   //check the password is modified or not for when we update
   if (!this.isModified("password")) return next();
 

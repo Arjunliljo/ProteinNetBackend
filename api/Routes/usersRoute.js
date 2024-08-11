@@ -1,6 +1,7 @@
 import express from "express";
 import authController from "../Controllers/authController.js";
 import userController from "../Controllers/userController.js";
+import filterData from "../Utilities/filterData.js";
 
 const router = express.Router();
 
@@ -10,10 +11,15 @@ router.post("/logout", authController.protect, authController.logout);
 router.delete("/deleteAllUsers", userController.deleteAllUsers);
 
 router.get("/getme", authController.protect, userController.getMe);
-router.get("/update-me", authController.protect, userController.updateMe);
-router.get("/delete-me", authController.protect, userController.deleteMe);
+router.patch(
+  "/update-me",
+  authController.protect,
+  filterData("User"),
+  userController.updateMe
+);
+router.patch("/delete-me", authController.protect, userController.deleteMe);
 
-router.route("/").get(authController.protect, userController.getAllUsers);
+router.route("/").get(userController.getAllUsers);
 
 router
   .route("/:id")

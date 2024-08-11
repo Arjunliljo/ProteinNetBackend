@@ -16,7 +16,7 @@ export default function filterData(type) {
       break;
 
     case "User":
-      allowedFields = ["name", "email", "phone", "password", "confirmPassword"];
+      allowedFields = ["name", "email", "phone"];
       break;
 
     default:
