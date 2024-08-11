@@ -17,6 +17,12 @@ router.patch(
   filterData("User"),
   userController.updateMe
 );
+router.patch(
+  "/reset-my-password",
+  authController.protect,
+  filterData("PasswordReset"),
+  userController.resetPassword
+);
 router.patch("/delete-me", authController.protect, userController.deleteMe);
 
 router.route("/").get(userController.getAllUsers);

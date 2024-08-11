@@ -16,7 +16,9 @@ const getMe = catchAsync(async (req, res, next) => {
 
 const updateMe = catchAsync(async (req, res, next) => {
   if (req.body.password || req.body.confirmPassword)
-    return next(new AppError("This is not the route for updating passoword.."));
+    return next(
+      new AppError("This is not the route for updating password..", 400)
+    );
 
   const updatedMe = await User.findByIdAndUpdate(req.userId, req.body, {
     new: true,
@@ -32,7 +34,42 @@ const updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
-const resetPassword = catchAsync(async (req, res, next) => {});
+const resetPassword = catchAsync(async (req, res, next) => {
+  const { password, newPassword, confirmNewPassword } = req.body;
+  console.log(password, newPassword, confirmNewPassword);
+  // 1). Check whole nesseccery informations are provided
+  if (!newPassword || !password || !confirmNewPassword)
+    return next(new AppError(`User must provide valid details..`));
+
+  // 2). Check the given current password matching the old password
+
+  // userId is coming from protect middleware
+  const user = await User.findById(req.userId);
+
+  const isPassword = await user.checkPassword(password, user.password);
+  if (!isPassword)
+    return next(
+      new AppError("Invalid password please provide your current password..")
+    );
+
+  // 3). check the newPassword and confrimNewPassword are equal or not
+
+  // this will check the password and confirm password matching with mongoose validator
+  // also it will trigger the document middle ware in userShema so password will be hashed also
+  user.password = newPassword;
+  user.confirmPassword = confirmNewPassword;
+
+  // 4). reset password
+  await user.save();
+
+  res.status(201).json({
+    status: "Success",
+    message: "Password changed successfully",
+    envelop: {
+      user,
+    },
+  });
+});
 
 const deleteMe = catchAsync(async (req, res, next) => {});
 

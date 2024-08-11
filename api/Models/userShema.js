@@ -15,9 +15,13 @@ const userSchema = mongoose.Schema(
       type: String,
       unique: true,
       required: [true, "User must have an Email"],
-      maxlength: [20, "Email should be less than 20 characters"],
+      maxlength: [30, "Email should be less than 20 characters"],
       minlength: [3, "email should be greater than 3 characters"],
-      validate: [validator.isEmail, "Please provide a valid email"],
+      Lowercase: true,
+      validate: {
+        validator: validator.isEmail,
+        message: "Please provide a valid email",
+      },
     },
     phone: {
       type: String,
@@ -66,12 +70,13 @@ const userSchema = mongoose.Schema(
 
 //Encrypting password and checking password and confirm password are correct
 userSchema.pre("save", async function (next) {
-  console.log("running");
   //check the password is modified or not for when we update
   if (!this.isModified("password")) return next();
 
   if (this.confirmPassword !== this.password)
-    return next(new AppError("Password did not matching...", 401));
+    return next(
+      new AppError("password and confirmPassword are not matching...", 401)
+    );
 
   const saltRounds = 10;
 
