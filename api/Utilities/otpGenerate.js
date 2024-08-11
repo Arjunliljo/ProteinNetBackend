@@ -4,8 +4,6 @@ configDotenv();
 import twilio from "twilio";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
-import AppError from "./appError.js";
-import { info } from "console";
 
 const accountSid = process.env.TWILIO_SID;
 const authToken = process.env.TWILIO_TOKEN;
@@ -13,7 +11,7 @@ const client = twilio(accountSid, authToken);
 
 const generateOtp = () => crypto.randomInt(100000, 999999).toString();
 
-export async function otpToEmail(mail, next) {
+export async function otpToEmail(mail) {
   const otp = generateOtp();
 
   let transpoter = nodemailer.createTransport({

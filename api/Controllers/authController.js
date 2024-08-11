@@ -2,7 +2,6 @@ import jwt from "jsonwebtoken";
 import User from "../Models/userShema.js";
 import catchAsync from "../Utilities/catchAsync.js";
 import AppError from "../Utilities/appError.js";
-import { otpToPhone } from "../Utilities/otpGenerate.js";
 import Cart from "../Models/cartModel.js";
 
 const KEY = process.env.JWT_SECRET;
@@ -56,7 +55,9 @@ const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password)
-    return next(new AppError("User must give email and password to login"));
+    return next(
+      new AppError("User must give email and password to login", 400)
+    );
 
   const user = await User.findOne({ email });
   if (!user) return next(new AppError("User did not exist..", 404));

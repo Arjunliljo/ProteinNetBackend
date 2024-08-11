@@ -6,6 +6,7 @@ const getAll = (Model) => {
     const datas = await Model.find();
     res.status(200).json({
       status: "Success",
+      length: datas.length,
       envelop: {
         datas,
       },

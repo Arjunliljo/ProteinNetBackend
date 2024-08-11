@@ -16,6 +16,12 @@ const cartSchema = mongoose.Schema(
     totalPrice: {
       type: Number,
     },
+    coupons: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "Coupons",
+      },
+    ],
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );

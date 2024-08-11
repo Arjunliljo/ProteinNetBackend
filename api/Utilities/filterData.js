@@ -23,6 +23,10 @@ export default function filterData(type) {
       allowedFields = ["password", "newPassword", "confirmNewPassword"];
       break;
 
+    case "Coupon":
+      allowedFields = ["name", "discountPercent", "permanant", "expireDate"];
+      break;
+
     default:
       next(new AppError("Invalid Model type gave to filterData", 401));
   }
