@@ -3,6 +3,8 @@ import couponController from "../Controllers/couponController.js";
 
 const router = express.Router();
 
+router.post("/assign/:userId/:couponId", couponController.assignCouponToUser);
+
 router
   .route("/")
   .get(couponController.getAllCoupon)

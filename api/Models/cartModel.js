@@ -19,7 +19,7 @@ const cartSchema = mongoose.Schema(
     coupons: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: "Coupons",
+        ref: "Coupon",
       },
     ],
   },
@@ -36,7 +36,9 @@ cartSchema.pre(/^find/, function (next) {
 });
 
 cartSchema.pre("find", function (next) {
-  this.populate({ path: "user", select: "name email phone" });
+  this.populate({ path: "user", select: "name email phone" }).populate({
+    path: "coupons",
+  });
   next();
 });
 
