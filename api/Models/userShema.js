@@ -51,7 +51,7 @@ const userSchema = mongoose.Schema(
         message: "Password did not matching",
       },
     },
-    cartId: {
+    cart: {
       type: mongoose.Schema.ObjectId,
       ref: "Cart",
     },
@@ -71,8 +71,16 @@ const userSchema = mongoose.Schema(
     passwordResetOtp: String,
     otpExpires: Date,
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
+
+// deselecting fields that don't want to give to frontend
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } }).select("-__v");
+  // this.populate({ path: "cart", select: "products" });
+
+  next();
+});
 
 //Encrypting password and checking password and confirm password are correct
 userSchema.pre("save", async function (next) {
@@ -122,11 +130,6 @@ userSchema.methods.createPasswordResetOtp = async function (email) {
   this.passwordResetOtp = otp;
   this.otpExpires = Date.now() + 10 * 60 * 1000;
 };
-
-// deselecting fields that don't want to give to frontend
-userSchema.pre(/^find/, async function () {
-  this.find({ active: { $ne: false } }).select("-__v");
-});
 
 const User = mongoose.model("User", userSchema);
 

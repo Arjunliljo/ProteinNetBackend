@@ -13,11 +13,23 @@ const cartSchema = mongoose.Schema(
         ref: "Product",
       },
     ],
+    totalPrice: {
+      type: Number,
+    },
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
+cartSchema.methods.calcTotalPrice = function (products) {
+  return products.reduce((acc, prod) => prod.price + acc, 0);
+};
+
 cartSchema.pre(/^find/, function (next) {
+  this.populate({ path: "products", select: "-__v -createdAt" });
+  next();
+});
+
+cartSchema.pre("find", function (next) {
   this.populate({ path: "user", select: "name email phone" });
   next();
 });

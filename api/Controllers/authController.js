@@ -45,7 +45,7 @@ const signUp = catchAsync(async (req, res, next) => {
   });
 
   // Link the cart to the user in a single save call
-  newUser.cartId = newUserCart._id;
+  newUser.cart = newUserCart._id;
   await newUser.save({ validateBeforeSave: false });
 
   // Send the token
