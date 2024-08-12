@@ -16,8 +16,10 @@ const handleInvalidId = (err) => {
 };
 
 const handleDuplicateDB = (err) => {
-  const [value] = err.errmsg.match(/"([^"]*)"/);
-  const message = `Duplicate field value ${value} . Please use anothor value`;
+  const value = err.errmsg.match(/"([^"]*)"/);
+  const message = `Duplicate field value ${
+    value?.[0] ? value[0] : "Found"
+  }. Please use anothor value`;
   return new AppError(message, 400);
 };
 
@@ -41,6 +43,7 @@ export default function globalErrorHandler(err, req, res, next) {
 
   //Catching duplicate Fields
   if (err.code === 11000) err = handleDuplicateDB(err);
+  else if (err.name === "MongoServerError") err = handleDuplicateDB(err);
 
   //handle validationError
   if (err.name === "ValidationError") err = handleValidationDB(err);
@@ -48,6 +51,5 @@ export default function globalErrorHandler(err, req, res, next) {
   //invalid token
   if (err.name === "JsonWebTokenError") err = handleJsonInvalidToken(err);
 
-  
   sendErr(err, res);
 }
