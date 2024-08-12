@@ -15,6 +15,14 @@ const cartSchema = mongoose.Schema(
     ],
     totalPrice: {
       type: Number,
+      default: 0,
+    },
+    couponAppliedPrice: {
+      type: Number,
+    },
+    isCouponApplied: {
+      type: Boolean,
+      default: false,
     },
     coupons: [
       {

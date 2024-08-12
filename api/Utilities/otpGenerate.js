@@ -102,18 +102,18 @@ export async function otpToEmail(mail) {
   }
 }
 
-export function otpToPhone(phoneNumber) {
-  // Generate a 6-digit OTP
-  const otp = generateOtp();
+// export function otpToPhone(phoneNumber) {
+//   // Generate a 6-digit OTP
+//   const otp = generateOtp();
 
-  client.messages
-    .create({
-      body: `Your verification code is ${otp}`,
-      from: "6238533609", // Your Twilio number
-      to: phoneNumber, // User's phone number
-    })
-    .then((message) => console.log(`OTP sent with SID: ${message.sid}`))
-    .catch((error) => console.error(`Failed to send OTP: ${error}`));
+//   client.messages
+//     .create({
+//       body: `Your verification code is ${otp}`,
+//       from: "6238533609", // Your Twilio number
+//       to: phoneNumber, // User's phone number
+//     })
+//     .then((message) => console.log(`OTP sent with SID: ${message.sid}`))
+//     .catch((error) => console.error(`Failed to send OTP: ${error}`));
 
-  return otp; // Return the OTP for further processing (e.g., saving to the database)
-}
+//   return otp; // Return the OTP for further processing (e.g., saving to the database)
+// }

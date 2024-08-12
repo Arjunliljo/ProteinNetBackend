@@ -16,6 +16,17 @@ router.patch(
   cartController.removeProductInCart
 );
 
+router.post(
+  "/apply-coupon",
+  authController.protect,
+  cartController.applyCoupon
+);
+router.patch(
+  "/remove-coupon",
+  authController.protect,
+  cartController.removeCoupon
+);
+
 router.route("/").get(cartController.getAllCart);
 router.route("/:id").get(cartController.getCart);
 

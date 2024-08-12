@@ -1,5 +1,5 @@
 import Cart from "../Models/cartModel.js";
-import Product from "../Models/productSchema.js";
+import Coupon from "../Models/couponsModel.js";
 import AppError from "../Utilities/appError.js";
 import catchAsync from "../Utilities/catchAsync.js";
 import { getAll, getOne, updateOne } from "./handlerFactory.js";
@@ -76,6 +76,72 @@ const removeProductInCart = catchAsync(async (req, res, next) => {
   });
 });
 
+const applyCoupon = catchAsync(async (req, res, next) => {
+  const code = req.body.code;
+
+  if (!code)
+    next(new AppError("Must give the code before accessing this route..", 400));
+
+  const coupon = await Coupon.findOne({ code, isValid: true });
+
+  if (!coupon)
+    return next(new AppError("Invalide code or Coupon is expired", 404));
+
+  const userCart = await Cart.findById(req.user.cart);
+
+  if (!userCart)
+    return next(new AppError("Invalide user please login again..", 401));
+
+  if (!userCart.totalPrice)
+    return next(
+      new AppError("You Must add some Products to apply coupon", 400)
+    );
+
+  if (userCart.isCouponApplied)
+    return next(new AppError("Coupon is already assigned", 401));
+
+  const discount = coupon.discountPercent / 100;
+  userCart.couponAppliedPrice =
+    userCart.totalPrice - userCart.totalPrice * discount;
+  userCart.couponAppliedPrice = Math.max(userCart.couponAppliedPrice, 0);
+
+  userCart.isCouponApplied = true;
+
+  await userCart.save();
+
+  res.status(201).json({
+    status: "Success",
+    discountPercent: coupon.discountPercent,
+    couponAppliedPrice: userCart.couponAppliedPrice,
+    totalPrice: userCart.totalPrice,
+    message: "Successfully assigned the Coupon",
+    data: userCart,
+  });
+});
+
+const removeCoupon = catchAsync(async (req, res, next) => {
+  const userCart = await Cart.findById(req.user.cart);
+
+  if (!userCart)
+    return next(new AppError("Invalide user please login again..", 401));
+
+  if (!userCart.isCouponApplied)
+    return next(new AppError("No coupon is currently applied.", 400));
+
+  userCart.isCouponApplied = false;
+  userCart.couponAppliedPrice = false;
+  userCart.couponAppliedPrice = undefined;
+
+  await userCart.save();
+
+  res.status(201).json({
+    status: "Success",
+    message: "Successfully removed the coupon",
+    totalPrice: userCart.totalPrice,
+    data: userCart,
+  });
+});
+
 const getAllCart = getAll(Cart);
 const getCart = getOne(Cart);
 const getCartByEmail = getOne(Cart, "email");
@@ -87,4 +153,6 @@ export default {
   addProductToMyCart,
   removeProductInCart,
   getCartByEmail,
+  applyCoupon,
+  removeCoupon,
 };
