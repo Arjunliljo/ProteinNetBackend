@@ -33,6 +33,7 @@ app.all("*", (req, res, next) => {
   next(new AppError(`Cannot find the ${req.originalUrl} on the page !`, 404));
 });
 
+console.log("h");
 // hangling every error in the entire application server never going to down
 app.use(globalErrorHandler);
 
